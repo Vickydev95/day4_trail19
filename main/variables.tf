@@ -22,11 +22,13 @@ variable "asp_name" {
 }
 
 variable "fc_name" {
-  description = ""
   default = "trailfc"
 }
 
 variable "storage_account_access_key" {
     default = "trailfcsa"
+}
+variable "kv_name" {
+  default = "trailkv"
 }
 

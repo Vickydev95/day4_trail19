@@ -10,7 +10,11 @@ terraform {
 
 
 provider "azurerm" {
-  features{}
+  features{
+    resource_group {
+       prevent_deletion_if_contains_resources = false      
+       }
+  }
 }
 module "resource_group" {    
   source    = "../module/resourcegroup"
@@ -48,7 +52,21 @@ module "function_app" {
   app_service_plan_id           = module.app_service_plan.app_service_id
   storage_account_access_key    = module.storage_account.primary_access_key
 }
-
+module "key_vault" {    
+  source    = "../module/keyvault"
+  depends_on = [ module.resource_group ]
+  kv_name   = var.kv_name
+  rsgp_name   = var.rsgp_name
+  location  = var.location  
+  tenant_id = data.azurerm_client_config.current.tenant_id
+  object_id = data.azurerm_client_config.current.object_id
+}
+module "cosmosdb_account" {    
+  source    = "../module/cosmosdb"
+  depends_on = [ module.key_vault ]
+  rsgp_name   = var.rsgp_name
+  location  = var.location  
+}
 
 
 
